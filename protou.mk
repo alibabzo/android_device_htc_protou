@@ -33,7 +33,7 @@ PRODUCT_PACKAGES += \
     libqdMetaData
     
 # Audio
-PRODUCT_PACKAGES += \
+#PRODUCT_PACKAGES += \
     audio.primary.msm7x27a \
     audio_policy.msm7x27a \
     audio.a2dp.default \
@@ -178,7 +178,7 @@ PRODUCT_COPY_FILES += \
     vendor/htc/protou/proprietary/lib/libsc-a2xx.so:system/lib/libsc-a2xx.so \
     vendor/htc/protou/proprietary/lib/libC2D2.so:system/lib/libC2D2.so \
     vendor/htc/protou/proprietary/lib/libc2d2_z180.so:system/lib/libc2d2_z180.so \
-    vendor/htc/protou/proprietary/lib/egl/libGLESv2S3D_adreno200.so:system/lib/egl/libGLESv2S3D_adreno200.so \
+    #vendor/htc/protou/proprietary/lib/egl/libGLESv2S3D_adreno200.so:system/lib/egl/libGLESv2S3D_adreno200.so \
     vendor/htc/protou/proprietary/lib/egl/eglsubAndroid.so:system/lib/egl/eglsubAndroid.so \
     vendor/htc/protou/proprietary/lib/egl/libEGL_adreno200.so:system/lib/egl/libEGL_adreno200.so \
     vendor/htc/protou/proprietary/lib/egl/libGLESv1_CM_adreno200.so:system/lib/egl/libGLESv1_CM_adreno200.so \
@@ -203,7 +203,7 @@ PRODUCT_COPY_FILES += \
 
 # Bluetooth
 PRODUCT_COPY_FILES += \
-    vendor/htc/protou/proprietary/etc/firmware/BCM4330B1_002.001.003.0833.0845.hcd:system/etc/firmware/BCM4330B1_002.001.003.0221.0228.hcd
+    device/htc/protou/prebuilt/etc/firmware/BCM4330B1_002.001.003.0221.0228.hcd:system/etc/firmware/BCM4330B1_002.001.003.0221.0228.hcd
 
 # Misc Blobs
 PRODUCT_COPY_FILES += \
