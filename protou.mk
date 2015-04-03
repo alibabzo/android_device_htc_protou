@@ -17,6 +17,9 @@
 
 $(call inherit-product, $(SRC_TARGET_DIR)/product/full_base_telephony.mk)
 
+# inherit all the stuff from vendor
+$(call inherit-product-if-exists, vendor/htc/protou/vendor_protou.mk)
+
 # Most specific first.
 $(call inherit-product, $(SRC_TARGET_DIR)/product/locales_full.mk)
 
@@ -100,31 +103,8 @@ PRODUCT_COPY_FILES += \
 # Camera
 PRODUCT_COPY_FILES += \
     device/htc/protou/prebuilt/lib/hw/vendor-camera.default.so:system/lib/hw/vendor-camera.default.so \
-    vendor/htc/protou/proprietary/lib/liboemcamera.so:system/lib/liboemcamera.so \
-    vendor/htc/protou/proprietary/lib/libmmipl.so:system/lib/libmmipl.so \
-    vendor/htc/protou/proprietary/lib/libmmjpeg.so:obj/lib/libmmjpeg.so \
-    vendor/htc/protou/proprietary/lib/libmmjpeg.so:system/lib/libmmjpeg.so \
-    vendor/htc/protou/proprietary/lib/libcameraface.so:system/lib/libcameraface.so \
-    vendor/htc/protou/proprietary/lib/libcamerapp.so:system/lib/libcamerapp.so \
-    vendor/htc/protou/proprietary/lib/libOlaEngine.so:system/lib/libOlaEngine.so \
-    vendor/htc/protou/proprietary/lib/libchromatix_mt9t013_default_video.so:system/lib/libchromatix_mt9t013_default_video.so \
-    vendor/htc/protou/proprietary/lib/libchromatix_mt9t013_preview.so:system/lib/libchromatix_mt9t013_preview.so \
-    vendor/htc/protou/proprietary/bin/awb_camera:system/bin/awb_camera \
-    vendor/htc/protou/proprietary/bin/lsc_camera:system/bin/lsc_camera \
-    vendor/htc/protou/proprietary/bin/mm-qcamera-daemon:system/bin/mm-qcamera-daemon \
     device/htc/protou/prebuilt/etc/media_profiles.xml:system/etc/media_profiles.xml \
     device/htc/protou/prebuilt/etc/media_codecs.xml:system/etc/media_codecs.xml
-    
-# OMX
-PRODUCT_COPY_FILES += \
-    vendor/htc/protou/proprietary/lib/libmm-adspsvc.so:system/lib/libmm-adspsvc.so \
-    vendor/htc/protou/proprietary/lib/libmmosal.so:system/lib/libmmosal.so \
-    vendor/htc/protou/proprietary/lib/libmmparser.so:system/lib/libmmparser.so \
-    vendor/htc/protou/proprietary/lib/libOmxH264Dec.so:system/lib/libOmxH264Dec.so \
-    vendor/htc/protou/proprietary/lib/libOmxMpeg4Dec.so:system/lib/libOmxMpeg4Dec.so \
-    vendor/htc/protou/proprietary/lib/libOmxVidEnc.so:system/lib/libOmxVidEnc.so \
-    vendor/htc/protou/proprietary/lib/libmmparser_divxdrmlib.so:system/lib/libmmparser_divxdrmlib.so \
-    vendor/htc/protou/proprietary/lib/libdivxdrmdecrypt.so:system/lib/libdivxdrmdecrypt.so
     
 # Set usb type
 ADDITIONAL_DEFAULT_PROPERTIES += \
@@ -163,33 +143,10 @@ PRODUCT_COPY_FILES += \
 #    device/htc/protou/prebuilt/lib/libaudioalsa.so:obj/lib/libaudioalsa.so \
 #    device/htc/protou/prebuilt/lib/libaudioalsa.so:system/lib/libaudioalsa.so
 
-# Sensors
-PRODUCT_COPY_FILES += \
-    vendor/htc/protou/proprietary/lib/hw/sensors.protou.so:system/lib/hw/sensors.protou.so
-
 # 3D(ICS Blobs)
 PRODUCT_COPY_FILES += \
-    vendor/htc/protou/proprietary/etc/firmware/yamato_pfp.fw:system/etc/firmware/yamato_pfp.fw \
-    vendor/htc/protou/proprietary/etc/firmware/yamato_pm4.fw:system/etc/firmware/yamato_pm4.fw \
     device/htc/protou/prebuilt/etc/firmware/leia_pfp_470.fw:system/etc/firmware/leia_pfp_470.fw \
     device/htc/protou/prebuilt/etc/firmware/leia_pm4_470.fw:system/etc/firmware/leia_pm4_470.fw \
-    vendor/htc/protou/proprietary/lib/libgsl.so:system/lib/libgsl.so \
-    vendor/htc/protou/proprietary/lib/libOpenVG.so:system/lib/libOpenVG.so \
-    vendor/htc/protou/proprietary/lib/libsc-a2xx.so:system/lib/libsc-a2xx.so \
-    vendor/htc/protou/proprietary/lib/libC2D2.so:system/lib/libC2D2.so \
-    vendor/htc/protou/proprietary/lib/libc2d2_z180.so:system/lib/libc2d2_z180.so \
-    #vendor/htc/protou/proprietary/lib/egl/libGLESv2S3D_adreno200.so:system/lib/egl/libGLESv2S3D_adreno200.so \
-    vendor/htc/protou/proprietary/lib/egl/eglsubAndroid.so:system/lib/egl/eglsubAndroid.so \
-    vendor/htc/protou/proprietary/lib/egl/libEGL_adreno200.so:system/lib/egl/libEGL_adreno200.so \
-    vendor/htc/protou/proprietary/lib/egl/libGLESv1_CM_adreno200.so:system/lib/egl/libGLESv1_CM_adreno200.so \
-    vendor/htc/protou/proprietary/lib/egl/libGLESv2_adreno200.so:system/lib/egl/libGLESv2_adreno200.so \
-    vendor/htc/protou/proprietary/lib/egl/libq3dtools_adreno200.so:system/lib/egl/libq3dtools_adreno200.so 
-    
-# RIL
-PRODUCT_COPY_FILES += \
-    vendor/htc/protou/proprietary/lib/libhtc_ril.so:system/lib/libhtc_ril.so \
-    vendor/htc/protou/proprietary/lib/libqc-opt.so:system/lib/libqc-opt.so \
-    vendor/htc/protou/proprietary/bin/qmuxd:system/bin/qmuxd
 
 # Audio DSP Profiles
 PRODUCT_COPY_FILES += \
