@@ -18,17 +18,17 @@ BOARD_VENDOR := htc
 
 TARGET_SPECIFIC_HEADER_PATH := device/htc/protou/include
 
-TARGET_GLOBAL_CFLAGS += -mfpu=neon -mfloat-abi=softfp
-TARGET_GLOBAL_CPPFLAGS += -mfpu=neon -mfloat-abi=softfp
+TARGET_GLOBAL_CFLAGS += -mfloat-abi=softfp -mfpu=neon-vfpv4 -mtune=cortex-a5
+TARGET_GLOBAL_CPPFLAGS += -mfloat-abi=softfp -mfpu=neon-vfpv4 -mtune=cortex-a5
 COMMON_GLOBAL_CFLAGS += -DQCOM_LEGACY_OMX
 COMMON_GLOBAL_CFLAGS += -DQCOM_HARDWARE
-#COMMON_GLOBAL_CFLAGS += -DQCOM_ICS_COMPAT
 COMMON_GLOBAL_CFLAGS += -DNEEDS_VECTORIMPL_SYMBOLS
 COMMON_GLOBAL_CFLAGS += -DQCOM_NO_SECURE_PLAYBACK
 COMMON_GLOBAL_CFLAGS += -DNO_UPDATE_PREVIEW
-COMMON_GLOBAL_CFLAGS += -DEGL_NEEDS_FNW
 COMMON_GLOBAL_CFLAGS += -DDISABLE_HW_ID_MATCH_CHECK
-COMMON_GLOBAL_CFLAGS += -DREFRESH_RATE=65
+COMMON_GLOBAL_CFLAGS += -DNEEDS_VECTORIMPL_SYMBOLS
+COMMON_GLOBAL_CFLAGS += -DUSE_GENLOCK
+COMMON_GLOBAL_CFLAGS += -DQCOM_LEGACY_CAM_PARAMS
 
 # Arch related defines and optimizations
 TARGET_BOARD_PLATFORM := msm7x27a
@@ -38,10 +38,8 @@ TARGET_ARCH_VARIANT := armv7-a-neon
 TARGET_CPU_ABI := armeabi-v7a
 TARGET_CPU_ABI2 := armeabi
 TARGET_CPU_SMP := true
-TARGET_CPU_VARIANT := cortex-a9
-ARCH_ARM_HAVE_ARMV7A := true
-ARCH_ARM_HAVE_NEON := true
-ARCH_ARM_HAVE_VFP := true
+TARGET_CPU_VARIANT := cortex-a5
+TARGET_ARCH_VARIANT_CPU := cortex-a5
 TARGET_ARCH_LOWMEM := true
 ARCH_ARM_HAVE_TLS_REGISTER := true
 TARGET_BOOTLOADER_BOARD_NAME := protou
@@ -49,10 +47,6 @@ TARGET_BOOTLOADER_BOARD_NAME := protou
 # Compiler Optimization
 ARCH_ARM_HIGH_OPTIMIZATION := true
 ARCH_ARM_HIGH_OPTIMIZATION_COMPAT := true
-
-# cortex-a9 is used to take advantage of NEON optimizations
-TARGET_ARCH_VARIANT_CPU := cortex-a9
-TARGET_ARCH_VARIANT_FPU := neon
 
 # Optimisations used by Qualcomm
 TARGET_USE_QCOM_BIONIC_OPTIMIZATION := true
@@ -72,6 +66,7 @@ TARGET_PROVIDES_LIBAUDIO := true
 BOARD_HAVE_PRE_KITKAT_AUDIO_BLOB := true
 
 # Fix this up by examining /proc/mtd on a running device
+TARGET_USERIMAGES_USE_EXT4 := true
 BOARD_SYSTEMIMAGE_PARTITION_SIZE := 1004535296
 BOARD_USERDATAIMAGE_PARTITION_SIZE := 1291845120
 BOARD_RECOVERYIMAGE_PARTITION_SIZE := 13104640
@@ -100,21 +95,19 @@ BOARD_BLUETOOTH_BDROID_BUILDCFG_INCLUDE_DIR := device/htc/protou/bluetooth/inclu
 BOARD_EGL_CFG := device/htc/protou/prebuilt/lib/egl/egl.cfg
 
 # WiFi related definitions
-BOARD_WPA_SUPPLICANT_DRIVER := NL80211
-WPA_SUPPLICANT_VERSION := VER_0_8_X
-BOARD_WPA_SUPPLICANT_PRIVATE_LIB := lib_driver_cmd_bcmdhd
+# Wifi related definitions
 BOARD_HOSTAPD_DRIVER := NL80211
 BOARD_HOSTAPD_PRIVATE_LIB := lib_driver_cmd_bcmdhd
 BOARD_WLAN_DEVICE := bcmdhd
-WIFI_DRIVER_FW_PATH_PARAM := "/sys/module/bcmdhd/parameters/firmware_path"
-WIFI_DRIVER_MODULE_PATH := "/system/lib/modules/bcmdhd.ko"
-WIFI_DRIVER_FW_PATH_STA := "/system/etc/firmware/fw_bcm4330_b2.bin"
-WIFI_DRIVER_FW_PATH_AP := "/system/etc/firmware/fw_bcm4330_apsta_b2.bin"
-WIFI_DRIVER_FW_PATH_P2P := "/system/etc/firmware/fw_bcm4330_p2p_b2.bin"
-WIFI_DRIVER_MODULE_NAME := "bcmdhd"
-WIFI_DRIVER_MODULE_ARG := "firmware_path=/system/etc/firmware/fw_bcm4330_b2.bin nvram_path=/proc/calibration iface_name=eth0"
+BOARD_WPA_SUPPLICANT_DRIVER := NL80211
+BOARD_WPA_SUPPLICANT_PRIVATE_LIB := lib_driver_cmd_bcmdhd
 WIFI_BAND := 802_11_BG
-BOARD_LEGACY_NL80211_STA_EVENTS := true
+WIFI_DRIVER_MODULE_PATH := "/system/lib/modules/bcmdhd.ko"
+WIFI_DRIVER_MODULE_NAME := "bcmdhd"
+WIFI_DRIVER_MODULE_ARG := "firmware_path=/system/etc/firmware/fw_bcmdhd.bin nvram_path=/proc/calibration iface_name=wlan0"
+WIFI_DRIVER_FW_PATH_PARAM := "/sys/module/bcmdhd/parameters/firmware_path"
+WIFI_DRIVER_FW_PATH_STA := "/system/etc/firmware/fw_bcmdhd.bin"
+WIFI_DRIVER_FW_PATH_AP := "/system/etc/firmware/fw_bcmdhd_apsta.bin"
 
 # Misc
 TARGET_BOOTANIMATION_PRELOAD := true
@@ -152,7 +145,7 @@ TARGET_QCOM_MEDIA_VARIANT := legacy
 
 # Recovery
 BOARD_HAS_NO_SELECT_BUTTON := true
-TARGET_RECOVERY_FSTAB := device/htc/protou/recovery.fstab
+TARGET_RECOVERY_FSTAB := device/htc/protou/ramdisk/fstab.protou
 
 # RIL
 BOARD_USE_NEW_LIBRIL_HTC := true
@@ -184,7 +177,7 @@ TARGET_PROVIDES_LIBLIGHT := true
 TARGET_PROVIDES_POWERHAL := true
 
 # TWRP
-DEVICE_RESOLUTION := 320x480
+DEVICE_RESOLUTION := 480x800
 RECOVERY_GRAPHICS_USE_LINELENGTH := true
 TW_NEVER_UMOUNT_SYSTEM := true
 TARGET_RECOVERY_PIXEL_FORMAT := "RGB_565"
