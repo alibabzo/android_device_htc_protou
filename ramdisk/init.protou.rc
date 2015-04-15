@@ -1,157 +1,4 @@
 import init.protou.usb.rc
-
-on init
-    mkdir /mnt/media_rw/sdcard0 0700 media_rw media_rw
-    mkdir /mnt/media_rw/usbdisk0 0700 media_rw media_rw
-    mkdir /storage/sdcard0 0700 root root
-    mkdir /storage/usbdisk0 0700 root root
-    export EXTERNAL_STORAGE /storage/sdcard0
-    # for backwards compatibility
-    symlink /storage/sdcard0 /sdcard
-    symlink /storage/sdcard0 /mnt/sdcard
-    symlink /storage/usbdisk0 /mnt/usbdisk
-    symlink /storage/usbdisk0 /usbdisk
-
-on post-fs-data
-    # wifi
-    mkdir /data/misc/wifi/hostapd 0770 wifi wifi
-    mkdir /data/misc/wifi/sockets 0770 wifi wifi
-    mkdir /data/misc/wifi/wpa_supplicant 0770 wifi wifi
-    mkdir /data/misc/dhcp 0770 dhcp dhcp
-
-    # bluetooth power up/down interface
-    chown bluetooth bluetooth /dev/ttyHS0
-    chown bluetooth net_bt_stack /sys/class/rfkill/rfkill0/type
-    chown bluetooth net_bt_stack /sys/class/rfkill/rfkill0/state
-    chmod 0660 /sys/class/rfkill/rfkill0/state
-
-    # Bluetooth MAC address path
-    chown bluetooth net_bt_stack /sys/module/htc_bdaddress/parameters/bdaddress
-    setprop ro.bt.bdaddr_path /sys/module/htc_bdaddress/parameters/bdaddress
-
-    # bluetooth car dock pin
-    chown system system /sys/class/switch/dock/bt_pin
-
-    # Create directory used by audio subsystem
-    mkdir /data/misc/audio 0770 audio audio
-
-    # Allow system to have access to /dev/tun directory
-    mkdir /dev/tun 0770 system vpn
-    chown system vpn /dev/tun
-    chmod 0770 /dev/tun
-
-    # Set indication (checked by vold) that we have finished this action
-    setprop vold.post_fs_data_done 1
-    
-on boot
-    mount debugfs /sys/kernel/debug /sys/kernel/debug
-    chmod 666 /proc/cmdline
-
-    # Power Management
-    chmod 0664 /sys/module/pm2/parameters/idle_sleep_mode
-    chown radio radio /sys/module/pm2/parameters/idle_sleep_mode
-
-    # Disable idle power collapse to speed up the boot process
-    # Enable it when boot is complete
-    write /sys/module/pm2/parameters/idle_sleep_mode 3
-
-    # for Optical sensors
-    chown system system /sys/class/optical_sensors/lightsensor/ls_adc
-    chown system system /sys/class/optical_sensors/lightsensor/ls_auto
-    chown system system /sys/class/optical_sensors/lightsensor/ls_kadc
-    chown system radio  /sys/class/optical_sensors/proximity/ps_adc
-    chown system system /sys/class/optical_sensors/proximity/ps_kadc
-    chmod 0666          /sys/class/optical_sensors/proximity/ps_kadc
-
-    # Radio_feedback permissions
-    chown radio radio /dev/radio_feedback
-    chmod 0660 /dev/radio_feedback
-
-    # for Flip to speaker
-    chown radio radio /sys/class/htc_accelerometer/accelerometer/PhoneOnOffFlag
-
-    # for charging function
-    chown radio radio /sys/module/htc_battery/parameters/phone_call
-    chmod 0660 /sys/module/htc_battery/parameters/phone_call
-
-    # to enable low charge current in voice call
-    chown radio radio /sys/class/power_supply/battery/charger_control
-    chmod 0660 /sys/class/power_supply/battery/charger_control
-
-    # for Slate charging timer
-    chown radio /sys/class/power_supply/battery/charger_timer
-
-    # Permissions for Liblights.
-    chown system system /sys/class/leds/green/brightness
-    chown system system /sys/class/leds/green/blink
-    chown system system /sys/class/leds/amber/brightness
-    chown system system /sys/class/leds/amber/blink
-    chown system system /sys/class/leds/button-backlight/brightness
-    chown system system /sys/class/leds/lcd-backlight/brightness
-
-    # smartass governor boostpulse
-    chown system system /sys/devices/system/cpu/cpufreq/smartass/boost_pulse
-    chown system system /sys/devices/system/cpu/cpufreq/smartassH3/boost_pulse
-    chmod 0660 /sys/devices/system/cpu/cpufreq/smartass/boost_pulse
-    chmod 0660 /sys/devices/system/cpu/cpufreq/smartassH3/boost_pulse
-
-    # Chown polling nodes as needed from UI running on system server
-    chmod 0664 /sys/devices/platform/msm_sdcc.1/polling
-    chmod 0664 /sys/devices/platform/msm_sdcc.2/polling
-    chmod 0664 /sys/devices/platform/msm_sdcc.3/polling
-    chmod 0664 /sys/devices/platform/msm_sdcc.4/polling
-    chown system system /sys/devices/platform/msm_sdcc.1/polling
-    chown system system /sys/devices/platform/msm_sdcc.2/polling
-    chown system system /sys/devices/platform/msm_sdcc.3/polling
-    chown system system /sys/devices/platform/msm_sdcc.4/polling
-
-    # Define TCP buffer sizes for various networks 	
-    setprop net.tcp.buffersize.hspa 4096,174760,3145728,4096,16384,110208	
-    setprop net.tcp.buffersize.hsupa 4096,174760,1572864,4096,16384,110208	
-    setprop net.tcp.buffersize.hsdpa 4096,174760,1572864,4096,16384,110208
-    setprop net.tcp.buffersize.umts 4096,174760,1572864,4096,16384,110208
-    setprop net.tcp.buffersize.edge 4096,174760,1572864,4096,16384,35040
-    setprop net.tcp.buffersize.gprs 4096,174760,1572864,4096,8760,11680
-
- # Start ADB before init.d so we can see errors    
-    start adbd
-
-    # To allow interfaces to get v6 address when tethering is enabled
-    write /proc/sys/net/ipv6/conf/rmnet0/accept_ra 2
-    write /proc/sys/net/ipv6/conf/rmnet1/accept_ra 2
-    write /proc/sys/net/ipv6/conf/rmnet2/accept_ra 2
-    write /proc/sys/net/ipv6/conf/rmnet3/accept_ra 2
-    write /proc/sys/net/ipv6/conf/rmnet4/accept_ra 2
-    write /proc/sys/net/ipv6/conf/rmnet5/accept_ra 2
-    write /proc/sys/net/ipv6/conf/rmnet6/accept_ra 2
-    write /proc/sys/net/ipv6/conf/rmnet7/accept_ra 2
-    write /proc/sys/net/ipv6/conf/rmnet_sdio0/accept_ra 2
-    write /proc/sys/net/ipv6/conf/rmnet_sdio1/accept_ra 2
-    write /proc/sys/net/ipv6/conf/rmnet_sdio2/accept_ra 2
-    write /proc/sys/net/ipv6/conf/rmnet_sdio3/accept_ra 2
-    write /proc/sys/net/ipv6/conf/rmnet_sdio4/accept_ra 2
-    write /proc/sys/net/ipv6/conf/rmnet_sdio5/accept_ra 2
-    write /proc/sys/net/ipv6/conf/rmnet_sdio6/accept_ra 2
-    write /proc/sys/net/ipv6/conf/rmnet_sdio7/accept_ra 2
-
-    # radio
-    mkdir /data/radio 0770 radio radio
-    chmod 2770 /data/radio
-    mkdir /dev/socket/qmux_radio 0770 radio radio
-    chmod 2770 /dev/socket/qmux_radio
-    mkdir /dev/socket/qmux_audio 0770 audio audio
-    chmod 2770 /dev/socket/qmux_audio
-    mkdir /dev/socket/qmux_bluetooth 0770 bluetooth bluetooth
-    chmod 2770 /dev/socket/qmux_bluetooth
-
-    # for CM performance
-    chown root system /sys/devices/system/cpu/cpu0/cpufreq/scaling_available_frequencies
-    chown root system /sys/devices/system/cpu/cpu0/cpufreq/scaling_available_governors
-    chown root system /sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq
-
-    # load kineto_gan.ko
-    insmod /system/lib/modules/kineto_gan.ko
-
 on fs
     # mount partitions
     mount_all /fstab.protou
@@ -160,11 +7,24 @@ on fs
     write /sys/module/lowmemorykiller/parameters/minfile 0,0,0,5120,5632,6144
     write /sys/module/lowmemorykiller/parameters/check_filepages 1
 
-    # fix for entropy service and some other that failed
-    # Need for NET
-    chmod 755 /data/system/appwidgets.xml
-    chmod 755 /data/system/entropy.dat
-    chmod 755 /data/system/wallpaper_info.xml
+    setprop ro.crypto.tmpfs_options size=128m,mode=0771,uid=1000,gid=1000
+    
+    symlink /system/vendor/firmware/fw_bcmdhd.bin /vendor/firmware/fw_bcmdhd.bin
+    symlink /system/vendor/firmware/fw_bcmdhd_apsta.bin /vendor/firmware/fw_bcmdhd_apsta.bin
+    symlink /system/vendor/firmware/fw_bcmdhd_p2p.bin /vendor/firmware/fw_bcmdhd_p2p.bin
+    symlink /system/vendor/firmware/bcm4329.hcd /vendor/firmware/bcm4329.hcd
+    
+    # TEMP HACK 
+    symlink /system/vendor/lib /vendor/lib
+    
+    # bluetooth permissions
+    chown bluetooth bluetooth /dev/ttyHS0
+    chmod 0660                /dev/ttyHS0
+    chown bluetooth bluetooth /sys/class/rfkill/rfkill0/type
+    chown bluetooth bluetooth /sys/class/rfkill/rfkill0/state
+    chmod 0660                /sys/class/rfkill/rfkill0/state
+    chown bluetooth bluetooth /sys/module/htc_bdaddress/parameters/bdaddress
+    setprop ro.bt.bdaddr_path /sys/module/htc_bdaddress/parameters/bdaddress
     
     # enable the GPS
     setprop ro.ril.def.agps.mode 2
@@ -177,24 +37,131 @@ on fs
     # Wakelock debug
     write /sys/module/wakelock/parameters/debug_mask 7
 
-    # Fast dormancy settings
-    setprop ro.ril.fast.dormancy.rule 1
-    setprop ro.ril.fd.scron.timeout 4
-    setprop ro.ril.fd.scroff.timeout 3
-
     # Configure and enable KSM
     write /sys/kernel/mm/ksm/pages_to_scan 600
     write /sys/kernel/mm/ksm/sleep_millisecs 3000
     write /sys/kernel/mm/ksm/run 1
 
-#service hciattach /system/bin/logwrapper /system/bin/brcm_patchram_plus --no2bytes --tosleep=50000 --enable_hci --baudrate 4000000 --patchram /system/etc/firmware/BCM4330B1_002.001.003.0221.0228.hcd --scopcm=0,0,0,0,0,0,0,3,3,0 /dev/ttyHS0
-#    user root
-#    group bluetooth net_bt_admin net_bt_stack
-#    disabled
-#    oneshot
+on early-init
+    export EXTERNAL_STORAGE /storage/sdcard0
+    mkdir /storage 0775 system system
+    mkdir /storage/sdcard0 0775 system system
 
-on property:sys.boot_completed=1
-    write /sys/module/pm2/parameters/idle_sleep_mode 1
+    # For backwards compatibility
+    symlink /storage/sdcard0 /sdcard
+    symlink /storage/sdcard0 /mnt/sdcard
+    device /dev/block/mmcblk0p17 0460 radio diag
+    
+
+    # load wifi firmware so things have time to initialize
+    rm /vendor
+    mkdir /vendor 0771 system system
+    mkdir /vendor/firmware 0771 system system
+    
+    chmod 0644 /proc/cmdline
+
+on init
+    mkdir /devlog 0700 root root
+
+on post-fs-data
+    chown root root /devlog
+    chmod 0700 /devlog
+    
+    # Set indication (checked by vold) that we have finished this action
+    setprop vold.post_fs_data_done 1
+    
+on boot
+    # for systrace
+    mount debugfs /sys/kernel/debug /sys/kernel/debug
+
+    # Chown polling nodes as needed from UI running on system server
+    chmod 0664 /sys/devices/platform/msm_sdcc.1/polling
+    chmod 0664 /sys/devices/platform/msm_sdcc.2/polling
+    chmod 0664 /sys/devices/platform/msm_sdcc.3/polling
+    chmod 0664 /sys/devices/platform/msm_sdcc.4/polling
+    chown system system /sys/devices/platform/msm_sdcc.1/polling
+    chown system system /sys/devices/platform/msm_sdcc.2/polling
+    chown system system /sys/devices/platform/msm_sdcc.3/polling
+    chown system system /sys/devices/platform/msm_sdcc.4/polling
+    
+    # for modem link
+    chown system system /sys/module/serial/parameters/modem_enabled
+    
+    # wifi
+    mkdir /data/misc 1771 system misc
+    mkdir /data/misc/wifi 0770 wifi wifi
+    mkdir /data/misc/wifi/sockets 0770 wifi wifi
+    mkdir /data/misc/dhcp 0770 dhcp dhcp
+    chown dhcp dhcp /data/misc/dhcp
+    
+    # symlink for HDMI
+    symlink /dev/graphics/fb1 /dev/graphics/hdmi
+    
+    # radio
+    mkdir /data/radio 2770 radio radio
+    mkdir /dev/radio 777 radio radio
+    
+    # liblights
+    chown system system /sys/class/leds/green/brightness
+    chown system system /sys/class/leds/green/blink
+    chown system system /sys/class/leds/amber/brightness
+    chown system system /sys/class/leds/amber/blink
+    chown system system /sys/class/leds/button-backlight/brightness
+    chown system system /sys/class/leds/lcd-backlight/brightness
+
+    # flashlight
+    chown system camera /sys/class/leds/flashlight/brightness
+    chmod 0660          /sys/class/leds/flashlight/brightness
+    
+    # for optical sensors
+    chown system system /sys/class/optical_sensors/lightsensor/ls_adc
+    chown system system /sys/class/optical_sensors/lightsensor/ls_auto
+    chown system system /sys/class/optical_sensors/lightsensor/ls_kadc
+    chown system radio /sys/class/optical_sensors/proximity/ps_adc
+    chown system system /sys/class/optical_sensors/proximity/ps_kadc
+    chown system system /sys/class/optical_sensors/proximity/ps_led
+    chown system system /sys/class/optical_sensors/proximity/ps_test_mode
+    
+    # for charging function
+	chown radio radio /sys/class/power_supply/battery/phone_call
+	chmod 0220 /sys/class/power_supply/battery/phone_call
+    
+    # Load bcmdhd.ko while booting
+    chmod 0444 /system/lib/modules/bcmdhd.ko
+    insmod /system/lib/modules/bcmdhd.ko
+    write /proc/sys/net/ipv6/conf/p2p0/disable_ipv6 1
+    
+    # for Flip to speaker
+	chown radio radio /sys/class/htc_accelerometer/accelerometer/PhoneOnOffFlag
+	chown radio radio /sys/class/htc_ecompass/ecompass/PhoneOnOffFlag
+    
+    # remove write permissions to video nodes
+	chown root:graphics /sys/devices/virtual/graphics/fb1/hpd
+    chmod 0666 /sys/devices/virtual/graphics/fb1/hpd
+    chmod 0664 /sys/devices/virtual/graphics/fb1/video_mode
+    chmod 0664 /sys/devices/virtual/graphics/fb1/format_3d
+    
+    # change owner and group for media server and surfaceflinger
+    chown system system /sys/devices/virtual/graphics/fb1/format_3d
+    
+    chown system system /sys/devices/platform/panel_3d/3D_mode
+    chmod 0664 /sys/devices/platform/panel_3d/3D_mode
+    
+    # sync fs
+    chown system /sys/devices/platform/rs300000a7.65536/force_sync
+    chown system /sys/devices/platform/rs300000a7.65536/sync_sts
+
+ # Start ADB before init.d so we can see errors    
+    start adbd
+
+    # for CM performance
+    chown root system /sys/devices/system/cpu/cpu0/cpufreq/scaling_available_frequencies
+    chown root system /sys/devices/system/cpu/cpu0/cpufreq/scaling_available_governors
+    chown root system /sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq
+
+    # load kineto_gan.ko
+    insmod /system/lib/modules/kineto_gan.ko
+
 
 # QMUX must be in multiple groups to support external process connections
 service qmuxd /system/bin/qmuxd
