@@ -57,13 +57,18 @@ TARGET_NO_BOOTLOADER := true
 TARGET_NO_RADIOIMAGE := true
 
 # Kernel
-BOARD_KERNEL_CMDLINE := console=ttyDCC0 androidboot.hardware=protou no_console_suspend=1
+BOARD_KERNEL_CMDLINE := console=ttyDCC0 androidboot.hardware=protou no_console_suspend=1 androidboot.selinux=permissive
 BOARD_KERNEL_BASE :=  0x03200000
 BOARD_PAGE_SIZE := 0x00000800
 
 # Audio
+TARGET_QCOM_AUDIO_VARIANT := caf
 TARGET_PROVIDES_LIBAUDIO := true
-BOARD_HAVE_PRE_KITKAT_AUDIO_BLOB := true
+TARGET_QCOM_TUNNEL_LPA_ENABLED := true
+BOARD_HAVE_HTC_AUDIO := true
+BOARD_QCOM_VOIP_ENABLED := true
+TARGET_USES_QCOM_COMPRESSED_AUDIO := true
+COMMON_GLOBAL_CFLAGS += -DHTC_ACOUSTIC_AUDIO -DLEGACY_QCOM_VOICE
 
 # Fix this up by examining /proc/mtd on a running device
 TARGET_USERIMAGES_USE_EXT4 := true
@@ -94,20 +99,22 @@ BOARD_BLUETOOTH_BDROID_BUILDCFG_INCLUDE_DIR := device/htc/protou/bluetooth/inclu
 # OpenGL drivers config file path
 BOARD_EGL_CFG := device/htc/protou/prebuilt/lib/egl/egl.cfg
 
-# WiFi related definitions
 # Wifi related definitions
-BOARD_HOSTAPD_DRIVER := NL80211
-BOARD_HOSTAPD_PRIVATE_LIB := lib_driver_cmd_bcmdhd
-BOARD_WLAN_DEVICE := bcmdhd
-BOARD_WPA_SUPPLICANT_DRIVER := NL80211
+BOARD_WPA_SUPPLICANT_DRIVER      := NL80211
+WPA_SUPPLICANT_VERSION           := VER_0_8_X
 BOARD_WPA_SUPPLICANT_PRIVATE_LIB := lib_driver_cmd_bcmdhd
-WIFI_BAND := 802_11_BG
-WIFI_DRIVER_MODULE_PATH := "/system/lib/modules/bcmdhd.ko"
-WIFI_DRIVER_MODULE_NAME := "bcmdhd"
-WIFI_DRIVER_MODULE_ARG := "firmware_path=/system/etc/firmware/fw_bcmdhd.bin nvram_path=/proc/calibration iface_name=wlan0"
-WIFI_DRIVER_FW_PATH_PARAM := "/sys/module/bcmdhd/parameters/firmware_path"
-WIFI_DRIVER_FW_PATH_STA := "/system/etc/firmware/fw_bcmdhd.bin"
-WIFI_DRIVER_FW_PATH_AP := "/system/etc/firmware/fw_bcmdhd_apsta.bin"
+BOARD_HOSTAPD_DRIVER             := NL80211
+BOARD_HOSTAPD_PRIVATE_LIB        := lib_driver_cmd_bcmdhd
+BOARD_WLAN_DEVICE                := bcmdhd
+BOARD_WLAN_DEVICE_REV            := bcm4330_b2
+WIFI_DRIVER_FW_PATH_PARAM        := "/sys/module/bcmdhd/parameters/firmware_path"
+WIFI_DRIVER_FW_PATH_STA          := "/system/etc/firmware/fw_bcm4330_b2.bin"
+WIFI_DRIVER_FW_PATH_AP           := "/system/etc/firmware/fw_bcm4330_apsta_b2.bin"
+WIFI_DRIVER_FW_PATH_P2P          := "/system/etc/firmware/fw_bcm4330_p2p_b2.bin"
+WIFI_DRIVER_MODULE_NAME          := "bcmdhd"
+WIFI_DRIVER_MODULE_ARG           := "firmware_path=/system/etc/firmware/fw_bcm4330_b2.bin nvram_path=/etc/calibration iface_name=wlan0"
+WIFI_BAND                        := 802_11_BG
+BOARD_LEGACY_NL80211_STA_EVENTS  := true
 
 # Misc
 TARGET_BOOTANIMATION_PRELOAD := true
@@ -133,7 +140,7 @@ TARGET_DOESNT_USE_FENCE_SYNC := true
 TARGET_QCOM_HDMI_OUT := false
 BOARD_USE_SKIA_LCDTEXT := true
 BOARD_HAVE_PIXEL_FORMAT_INFO := true
-BOARD_EGL_WORKAROUND_BUG_10194508 := true
+BOARD_EGL_WORKAROUND_BUG_10194508 := true
 BOARD_USE_MHEAP_SCREENSHOT := true
 TARGET_USES_OPENGLES_FOR_SCREEN_CAPTURE := true
 
